@@ -1,22 +1,17 @@
-const express = require('express')
-const cors = require('cors')
+const express = require('express');
+const cors = require('cors');
 
-const app = express()
+const employeeRoutes = require('./routes/employees');
+const attendanceRoutes = require('./routes/attendance');
 
-app.use(cors())
-app.use(express.json())
+const app = express();
 
-app.get('/', (req, res) => {
+app.use(cors());
+app.use(express.json());
 
-  res.json({
-    message:
-      'Backend running successfully',
-  })
-})
+app.use('/employees', employeeRoutes);
+app.use('/attendance', attendanceRoutes);
 
 app.listen(5000, () => {
-
-  console.log(
-    'Server running on port 5000'
-  )
-})
+  console.log('Server running on port 5000');
+});
