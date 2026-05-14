@@ -223,7 +223,7 @@ export default function Dashboard() {
                   dataKey="value"
                 >
 
-                  {employeeData.map((entry, index) => (
+                  {employeeData.map((_, index) => (
 
                     <Cell
                       key={`cell-${index}`}
