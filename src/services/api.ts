@@ -3,6 +3,6 @@ import axios from 'axios'
 export default axios.create({
 
   baseURL:
-    'http://192.168.0.139:5000/api',
+    'https://vizhuthugal-backend.onrender.com/api',
 
 })
