@@ -4,17 +4,7 @@ import {
   FileText,
   Clock3,
   TrendingUp,
-  Activity,
 } from 'lucide-react';
-
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
 
 import {
   useEffect,
@@ -85,56 +75,6 @@ export default function Dashboard() {
       icon: <Clock3 size={28} />,
       bg: 'bg-orange-100',
       text: 'text-orange-600',
-    },
-  ];
-
-  // Pie Chart Data
-  const employeeData = [
-    {
-      name: 'Active',
-      value: 98,
-    },
-
-    {
-      name: 'Inactive',
-      value: 12,
-    },
-
-    {
-      name: 'Pending',
-      value: 14,
-    },
-  ];
-
-  const COLORS = [
-    '#22c55e',
-    '#ef4444',
-    '#f59e0b',
-  ];
-
-  const activities = [
-    {
-      title: 'New Employee Added',
-      desc: 'Karthikeyan joined as Frontend Developer',
-      time: '2 mins ago',
-    },
-
-    {
-      title: 'Attendance Updated',
-      desc: 'Arun Kumar checked in successfully',
-      time: '10 mins ago',
-    },
-
-    {
-      title: 'Daily Report Submitted',
-      desc: 'UI Team uploaded today’s work report',
-      time: '1 hour ago',
-    },
-
-    {
-      title: 'Task Completed',
-      desc: 'Backend API integration finished',
-      time: '2 hours ago',
     },
   ];
 
