@@ -13,6 +13,8 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Attendance from './pages/Attendance';
 import Notifications from './pages/Notification';
+import Register from './pages/Register';
+import ForgotPassword from './pages/Forgotpassword';
 
 export default function App() {
 
@@ -24,6 +26,18 @@ export default function App() {
       <Route
         path="/login"
         element={<Login />}
+      />
+
+       {/* Register */}
+      <Route
+        path="/Register"
+        element={<Register />}
+      />
+
+       {/* ForgotPassword */}
+      <Route
+        path="/Forgotpassword"
+        element={<ForgotPassword />}
       />
 
       {/* Redirect */}

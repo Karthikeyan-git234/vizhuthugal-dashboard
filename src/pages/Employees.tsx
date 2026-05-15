@@ -1,208 +1,362 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import {
   Search,
   Plus,
-  Trash2,
-  User,
+  Users,
   Briefcase,
+  Building2,
+  Mail,
   X,
   Pencil,
-} from 'lucide-react';
+  Trash2,
+} from 'lucide-react'
 
-interface Employee {
-  id: number;
-  name: string;
-  role: string;
-  status: string;
-}
+import api from '../services/api'
 
 export default function Employees() {
 
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] =
+    useState<any[]>([])
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] =
+    useState('')
 
-  const [status, setStatus] = useState('All Status');
+  const [filterRole, setFilterRole] =
+    useState('All')
 
-  // Add/Edit Modal
-  const [open, setOpen] = useState(false);
+  const [showModal, setShowModal] =
+    useState(false)
 
-  // Delete Modal
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [editId, setEditId] =
+    useState<number | null>(null)
 
-  // Edit
-  const [isEdit, setIsEdit] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  /* Form States */
 
-  // Form
-  const [name, setName] = useState('');
-  const [role, setRole] = useState('');
-  const [employeeStatus, setEmployeeStatus] = useState('Active');
+  const [name, setName] =
+    useState('')
 
-  // Initial Data
+  const [role, setRole] =
+    useState('')
+
+  const [phone, setPhone] =
+    useState('')
+
+  const [email, setEmail] =
+    useState('')
+
+  const [department, setDepartment] =
+    useState('')
+
+  const [joiningDate, setJoiningDate] =
+    useState('')
+
+  /* Fetch Employees */
+
+  const fetchEmployees =
+    async () => {
+
+      try {
+
+        const res =
+          await api.get(
+            '/employees'
+          )
+
+        setEmployees(res.data)
+
+      } catch (err) {
+
+        console.log(err)
+
+      }
+    }
+
   useEffect(() => {
 
-    setEmployees([
-      {
-        id: 1,
-        name: 'Karthikeyan',
-        role: 'Frontend Developer',
-        status: 'Active',
-      },
+    fetchEmployees()
 
-      {
-        id: 2,
-        name: 'Arun Kumar',
-        role: 'UI Designer',
-        status: 'Inactive',
-      },
+  }, [])
 
-      {
-        id: 3,
-        name: 'Vignesh',
-        role: 'Backend Developer',
-        status: 'Pending',
-      },
-    ]);
+  /* Edit */
 
-  }, []);
+  const handleEdit = (
+    item: any
+  ) => {
 
-  // Add / Update Employee
-  const handleAddEmployee = () => {
+    setEditId(item.id)
 
-    if (!name.trim() || !role.trim()) {
-      return;
+    setName(item.name)
+
+    setRole(item.role)
+
+    setPhone(item.phone)
+
+    setEmail(item.email)
+
+    setDepartment(
+      item.department
+    )
+
+    setJoiningDate(
+      item.joining_date
+    )
+
+    setShowModal(true)
+  }
+
+  /* Delete */
+
+  const handleDelete =
+    async (id: number) => {
+
+      const confirmDelete =
+        window.confirm(
+          'Are you sure you want to delete this employee?'
+        )
+
+      if (!confirmDelete)
+        return
+
+      try {
+
+        await api.delete(
+          `/employees/${id}`
+        )
+
+        fetchEmployees()
+
+      } catch (err) {
+
+        console.log(err)
+
+      }
     }
 
-    // Update
-    if (isEdit && editId !== null) {
+  /* Save Employee */
 
-      const updatedEmployees = employees.map((emp) =>
+  const handleAddEmployee =
+    async () => {
 
-        emp.id === editId
-          ? {
-              ...emp,
+      if (
+        !name ||
+        !role ||
+        !phone ||
+        !email ||
+        !department ||
+        !joiningDate
+      ) {
+
+        alert(
+          'Fill all details'
+        )
+
+        return
+      }
+
+      /* Phone Validation */
+
+      const phoneRegex =
+        /^[0-9]{10}$/
+
+      if (
+        !phoneRegex.test(phone)
+      ) {
+
+        alert(
+          'Phone number must contain exactly 10 digits'
+        )
+
+        return
+      }
+
+      /* Email Validation */
+
+      const emailRegex =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+      if (
+        !emailRegex.test(email)
+      ) {
+
+        alert(
+          'Enter valid email'
+        )
+
+        return
+      }
+
+      try {
+
+        if (editId) {
+
+          await api.put(
+
+            `/employees/${editId}`,
+
+            {
               name,
               role,
-              status: employeeStatus,
+              phone,
+              email,
+              department,
+              joiningDate,
             }
-          : emp
-      );
 
-      setEmployees(updatedEmployees);
+          )
 
-    } else {
+        } else {
 
-      // Add
-      const newEmployee = {
-        id: Date.now(),
-        name,
-        role,
-        status: employeeStatus,
-      };
+          await api.post(
+            '/employees',
+            {
+              name,
+              role,
+              phone,
+              email,
+              department,
+              joiningDate,
+            }
+          )
+        }
 
-      setEmployees([newEmployee, ...employees]);
+        fetchEmployees()
+
+        setShowModal(false)
+
+        setEditId(null)
+
+        setName('')
+        setRole('')
+        setPhone('')
+        setEmail('')
+        setDepartment('')
+        setJoiningDate('')
+
+      } catch (err) {
+
+        console.log(err)
+
+      }
     }
 
-    // Reset
-    setName('');
-    setRole('');
-    setEmployeeStatus('Active');
+  /* Filter */
 
-    setEditId(null);
-    setIsEdit(false);
+  const filteredEmployees =
+    useMemo(() => {
 
-    setOpen(false);
-  };
+      return employees.filter(
+        (item: any) => {
 
-  // Delete
-  const handleDelete = (id: number) => {
+          const matchesSearch =
 
-    const updatedEmployees = employees.filter(
-      (emp) => emp.id !== id
-    );
+            item.name
+              ?.toLowerCase()
+              .includes(
+                search.toLowerCase()
+              ) ||
 
-    setEmployees(updatedEmployees);
+            item.email
+              ?.toLowerCase()
+              .includes(
+                search.toLowerCase()
+              )
 
-    setDeleteOpen(false);
-    setDeleteId(null);
-  };
+          const matchesRole =
 
-  // Edit
-  const handleEdit = (emp: Employee) => {
+            filterRole === 'All'
+              ? true
+              : item.role ===
+                filterRole
 
-    setName(emp.name);
+          return (
+            matchesSearch &&
+            matchesRole
+          )
+        }
+      )
 
-    setRole(emp.role);
+    }, [
+      employees,
+      search,
+      filterRole,
+    ])
 
-    setEmployeeStatus(emp.status);
+  /* Stats */
 
-    setEditId(emp.id);
+  const totalEmployees =
+    employees.length
 
-    setIsEdit(true);
+  const technicalCount =
+    employees.filter(
+      (item) =>
+        item.role ===
+        'Technical'
+    ).length
 
-    setOpen(true);
-  };
+  const mentoringCount =
+    employees.filter(
+      (item) =>
+        item.role ===
+        'Mentoring'
+    ).length
 
-  // Confirm Delete
-  const confirmDelete = (id: number) => {
-
-    setDeleteId(id);
-    setDeleteOpen(true);
-  };
-
-  // Search + Filter
-  const filteredEmployees = employees.filter((emp) => {
-
-    const matchesSearch =
-      emp.name.toLowerCase().includes(search.toLowerCase());
-
-    const matchesStatus =
-      status === 'All Status'
-        ? true
-        : emp.status === status;
-
-    return matchesSearch && matchesStatus;
-  });
+  const communityCount =
+    employees.filter(
+      (item) =>
+        item.role ===
+        'Community'
+    ).length
 
   return (
 
-    <div className="min-h-screen bg-slate-100">
+    <div className="p-6 bg-slate-100 min-h-screen">
 
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+
+      <div className="flex items-center justify-between mb-8">
 
         <div>
 
-          <h1 className="text-4xl font-bold text-slate-800">
-            Employees Management
+          <h1 className="text-3xl font-bold text-slate-800">
+
+            Employees
+
           </h1>
 
-          <p className="text-slate-500 mt-2">
-            Manage all employee details professionally
+          <p className="text-slate-500 mt-1">
+
+            Manage all employee details
+
           </p>
 
         </div>
 
         {/* Add Button */}
+
         <button
           onClick={() => {
 
-            setOpen(true);
+            setEditId(null)
 
-            setIsEdit(false);
+            setName('')
+            setRole('')
+            setPhone('')
+            setEmail('')
+            setDepartment('')
+            setJoiningDate('')
 
-            setName('');
-            setRole('');
-            setEmployeeStatus('Active');
+            setShowModal(true)
 
           }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl shadow-sm transition-all duration-300"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition-all text-white px-5 py-3 rounded-2xl shadow-lg"
         >
 
-          <Plus size={20} />
+          <Plus size={18} />
 
           Add Employee
 
@@ -210,479 +364,555 @@ export default function Employees() {
 
       </div>
 
+      {/* Stats */}
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-slate-500 text-sm">
+                Total Employees
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+                {totalEmployees}
+              </h2>
+
+            </div>
+
+            <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
+
+              <Users
+                size={26}
+                className="text-blue-600"
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-slate-500 text-sm">
+                Technical
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+                {technicalCount}
+              </h2>
+
+            </div>
+
+            <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center">
+
+              <Briefcase
+                size={26}
+                className="text-violet-600"
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-slate-500 text-sm">
+                Mentoring
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+                {mentoringCount}
+              </h2>
+
+            </div>
+
+            <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
+
+              <Mail
+                size={26}
+                className="text-emerald-600"
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-slate-500 text-sm">
+                Community
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+                {communityCount}
+              </h2>
+
+            </div>
+
+            <div className="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center">
+
+              <Building2
+                size={26}
+                className="text-orange-600"
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
       {/* Search + Filter */}
-      <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 mb-8">
 
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 mb-8">
 
-          {/* Search */}
-          <div className="flex items-center gap-3 flex-1 bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200">
+        <div className="flex flex-col md:flex-row gap-4">
+
+          <div className="flex-1 relative">
 
             <Search
-              className="text-slate-400"
               size={20}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
             />
 
             <input
               type="text"
               placeholder="Search employees..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent outline-none text-slate-700 placeholder:text-slate-400"
+              onChange={(e) =>
+                setSearch(
+                  e.target.value
+                )
+              }
+              className="w-full h-14 rounded-2xl border border-slate-300 pl-12 pr-4 outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
             />
 
           </div>
 
-          {/* Status Filter */}
-          <div className="min-w-[220px]">
-
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 outline-none text-slate-700 focus:border-blue-500 transition"
-            >
-
-              <option>
-                All Status
-              </option>
-
-              <option>
-                Active
-              </option>
-
-              <option>
-                Inactive
-              </option>
-
-              <option>
-                Pending
-              </option>
-
-            </select>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-
-          <p className="text-slate-500 text-sm mb-2">
-            Total Employees
-          </p>
-
-          <h2 className="text-4xl font-bold text-slate-800">
-            {employees.length}
-          </h2>
-
-        </div>
-
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-
-          <p className="text-slate-500 text-sm mb-2">
-            Active Employees
-          </p>
-
-          <h2 className="text-4xl font-bold text-green-600">
-
-            {
-              employees.filter(
-                (emp) => emp.status === 'Active'
-              ).length
+          <select
+            value={filterRole}
+            onChange={(e) =>
+              setFilterRole(
+                e.target.value
+              )
             }
+            className="h-14 px-5 rounded-2xl border border-slate-300 outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
+          >
 
-          </h2>
+            <option value="All">
+              All Roles
+            </option>
 
-        </div>
-              {/* Inactive Employees */}
+            <option value="Technical">
+              Technical
+            </option>
 
-<div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+            <option value="Mentoring">
+              Mentoring
+            </option>
 
-  <p className="text-slate-500 text-sm mb-2">
-    Inactive Employees
-  </p>
+            <option value="Community">
+              Community
+            </option>
 
-  <h2 className="text-4xl font-bold text-red-600">
-
-    {
-      employees.filter(
-        (emp) => emp.status === 'Inactive'
-      ).length
-    }
-
-  </h2>
-
-</div>
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-
-          <p className="text-slate-500 text-sm mb-2">
-            Pending Employees
-          </p>
-
-          <h2 className="text-4xl font-bold text-orange-500">
-
-            {
-              employees.filter(
-                (emp) => emp.status === 'Pending'
-              ).length
-            }
-
-          </h2>
+          </select>
 
         </div>
 
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
 
-        {/* Table Header */}
-        <div className="grid grid-cols-4 bg-slate-100 px-6 py-4 border-b border-slate-200">
+      <div className="overflow-x-auto bg-white rounded-3xl shadow-sm border border-slate-200">
 
-          <h2 className="font-semibold text-slate-700">
-            Employee
-          </h2>
+        <table className="w-full">
 
-          <h2 className="font-semibold text-slate-700">
-            Role
-          </h2>
+          <thead className="bg-blue-600 text-white">
 
-          <h2 className="font-semibold text-slate-700">
-            Status
-          </h2>
+            <tr>
 
-          <h2 className="font-semibold text-slate-700 text-center">
-            Actions
-          </h2>
+              <th className="p-5 text-left">
+                Name
+              </th>
 
-        </div>
+              <th className="p-5 text-left">
+                Role
+              </th>
 
-        {/* Table Body */}
-        <div>
+              <th className="p-5 text-left">
+                Phone
+              </th>
 
-          {filteredEmployees.map((emp) => (
+              <th className="p-5 text-left">
+                Email
+              </th>
 
-            <div
-              key={emp.id}
-              className="grid grid-cols-4 items-center px-6 py-5 border-b border-slate-100 hover:bg-slate-50 transition-all duration-300"
-            >
+              <th className="p-5 text-left">
+                Department
+              </th>
 
-              {/* Employee */}
-              <div className="flex items-center gap-4">
+              <th className="p-5 text-left">
+                Joining Date
+              </th>
 
-                <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+              <th className="p-5 text-left">
+                Actions
+              </th>
 
-                  <User
-                    className="text-blue-600"
-                    size={22}
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {
+              filteredEmployees.length === 0 ? (
+
+                <tr>
+
+                  <td
+                    colSpan={7}
+                    className="text-center py-16"
+                  >
+
+                    <div className="flex flex-col items-center">
+
+                      <Users
+                        size={55}
+                        className="text-slate-300"
+                      />
+
+                      <h2 className="text-2xl font-bold text-slate-700 mt-4">
+
+                        No Employees Found
+
+                      </h2>
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              ) : (
+
+                filteredEmployees.map(
+                  (item: any) => (
+
+                    <tr
+                      key={item.id}
+                      className="border-b hover:bg-slate-50 transition-all"
+                    >
+
+                      <td className="p-5 font-semibold text-slate-800">
+                        {item.name}
+                      </td>
+
+                      <td className="p-5">
+                        <span className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 text-sm font-medium">
+                          {item.role}
+                        </span>
+                      </td>
+
+                      <td className="p-5 text-slate-700">
+                        {item.phone}
+                      </td>
+
+                      <td className="p-5 text-slate-700">
+                        {item.email}
+                      </td>
+
+                      <td className="p-5 text-slate-700">
+                        {item.department}
+                      </td>
+
+                      <td className="p-5 text-slate-700">
+                        {item.joining_date}
+                      </td>
+
+                      {/* Actions */}
+
+                      <td className="p-5">
+
+                        <div className="flex items-center gap-3">
+
+                          {/* Edit */}
+
+                          <button
+                            onClick={() =>
+                              handleEdit(item)
+                            }
+                            className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-all"
+                          >
+
+                            <Pencil
+                              size={18}
+                              className="text-blue-600"
+                            />
+
+                          </button>
+
+                          {/* Delete */}
+
+                          <button
+                            onClick={() =>
+                              handleDelete(item.id)
+                            }
+                            className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center hover:bg-red-200 transition-all"
+                          >
+
+                            <Trash2
+                              size={18}
+                              className="text-red-600"
+                            />
+
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  )
+                )
+              )
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      {/* Modal */}
+
+      {
+        showModal && (
+
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+            <div className="bg-white rounded-3xl p-8 w-full max-w-2xl relative">
+
+              {/* Close */}
+
+              <button
+                onClick={() =>
+                  setShowModal(false)
+                }
+                className="absolute top-5 right-5"
+              >
+
+                <X
+                  size={24}
+                  className="text-slate-500"
+                />
+
+              </button>
+
+              <h2 className="text-2xl font-bold text-slate-800 mb-6">
+
+                {
+                  editId
+                    ? 'Edit Employee'
+                    : 'Add Employee'
+                }
+
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div>
+
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                    Employee Name
+
+                  </label>
+
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) =>
+                      setName(
+                        e.target.value
+                      )
+                    }
+                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
                   />
 
                 </div>
 
                 <div>
 
-                  <h2 className="font-semibold text-slate-800">
-                    {emp.name}
-                  </h2>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
 
-                  <p className="text-sm text-slate-500">
-                    Employee ID #{emp.id}
-                  </p>
+                    Phone Number
+
+                  </label>
+
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) =>
+                      setPhone(
+                        e.target.value
+                      )
+                    }
+                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
+                  />
+
+                </div>
+
+                <div>
+
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                    Email Address
+
+                  </label>
+
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) =>
+                      setEmail(
+                        e.target.value
+                      )
+                    }
+                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
+                  />
+
+                </div>
+
+                <div>
+
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                    Department
+
+                  </label>
+
+                  <input
+                    type="text"
+                    value={department}
+                    onChange={(e) =>
+                      setDepartment(
+                        e.target.value
+                      )
+                    }
+                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
+                  />
+
+                </div>
+
+                <div>
+
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                    Role
+
+                  </label>
+
+                  <select
+                    value={role}
+                    onChange={(e) =>
+                      setRole(
+                        e.target.value
+                      )
+                    }
+                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
+                  >
+
+                    <option value="">
+                      Select Role
+                    </option>
+
+                    <option value="Technical">
+                      Technical
+                    </option>
+
+                    <option value="Mentoring">
+                      Mentoring
+                    </option>
+
+                    <option value="Community">
+                      Community
+                    </option>
+
+                  </select>
+
+                </div>
+
+                <div>
+
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+
+                    Joining Date
+
+                  </label>
+
+                  <input
+                    type="date"
+                    value={joiningDate}
+                    onChange={(e) =>
+                      setJoiningDate(
+                        e.target.value
+                      )
+                    }
+                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
+                  />
 
                 </div>
 
               </div>
 
-              {/* Role */}
-              <div className="flex items-center gap-2 text-slate-600">
-
-                <Briefcase size={16} />
-
-                <span>
-                  {emp.role}
-                </span>
-
-              </div>
-
-              {/* Status */}
-              <div>
-
-                <span
-                  className={`px-4 py-2 rounded-full text-sm font-medium
-                    ${
-                      emp.status === 'Active'
-                        ? 'bg-green-100 text-green-600'
-                        : emp.status === 'Inactive'
-                        ? 'bg-red-100 text-red-600'
-                        : 'bg-orange-100 text-orange-600'
-                    }
-                  `}
-                >
-
-                  {emp.status}
-
-                </span>
-
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-center gap-3">
-
-                {/* Edit */}
-                <button
-                  onClick={() => handleEdit(emp)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm transition"
-                >
-
-                  <Pencil size={16} />
-
-                  Edit
-
-                </button>
-
-                {/* Delete */}
-                <button
-                  onClick={() => confirmDelete(emp.id)}
-                  className="p-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-600 transition"
-                >
-
-                  <Trash2 size={18} />
-
-                </button>
-
-              </div>
-
-            </div>
-
-          ))}
-
-          {/* Empty */}
-          {filteredEmployees.length === 0 && (
-
-            <div className="p-12 text-center">
-
-              <h2 className="text-2xl font-bold text-slate-700 mb-2">
-                No Employees Found
-              </h2>
-
-              <p className="text-slate-500">
-                Add employees to display here
-              </p>
-
-            </div>
-
-          )}
-
-        </div>
-
-      </div>
-
-      {/* Add/Edit Modal */}
-      {open && (
-
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl">
-
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-
-              <div>
-
-                <h2 className="text-2xl font-bold text-slate-800">
-
-                  {isEdit
-                    ? 'Edit Employee'
-                    : 'Add Employee'
-                  }
-
-                </h2>
-
-                <p className="text-slate-500 text-sm mt-1">
-                  Enter employee details
-                </p>
-
-              </div>
+              {/* Submit */}
 
               <button
-                onClick={() => setOpen(false)}
-                className="bg-slate-100 hover:bg-slate-200 p-2 rounded-xl transition"
+                onClick={
+                  handleAddEmployee
+                }
+                className="w-full h-14 bg-blue-600 hover:bg-blue-700 transition-all rounded-2xl text-white font-semibold mt-8"
               >
 
-                <X size={20} />
-
-              </button>
-
-            </div>
-
-            {/* Form */}
-            <div className="space-y-5">
-
-              {/* Name */}
-              <div>
-
-                <label className="block text-sm font-medium text-slate-600 mb-2">
-
-                  Employee Name
-
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Enter employee name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:border-blue-500"
-                />
-
-              </div>
-
-              {/* Role */}
-              <div>
-
-                <label className="block text-sm font-medium text-slate-600 mb-2">
-
-                  Employee Role
-
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Enter employee role"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:border-blue-500"
-                />
-
-              </div>
-
-              {/* Status */}
-              <div>
-
-                <label className="block text-sm font-medium text-slate-600 mb-2">
-
-                  Employee Status
-
-                </label>
-
-                <select
-                  value={employeeStatus}
-                  onChange={(e) =>
-                    setEmployeeStatus(e.target.value)
-                  }
-                  className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:border-blue-500"
-                >
-
-                  <option>
-                    Active
-                  </option>
-
-                  <option>
-                    Inactive
-                  </option>
-
-                  <option>
-                    Pending
-                  </option>
-
-                </select>
-
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-3 pt-3">
-
-                <button
-                  onClick={() => setOpen(false)}
-                  className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3 rounded-2xl font-medium"
-                >
-
-                  Cancel
-
-                </button>
-
-                <button
-                  onClick={handleAddEmployee}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-medium"
-                >
-
-                  {isEdit
+                {
+                  editId
                     ? 'Update Employee'
-                    : 'Add Employee'
-                  }
-
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
-
-      {/* Delete Modal */}
-      {deleteOpen && (
-
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl">
-
-            <div className="mb-6">
-
-              <h2 className="text-2xl font-bold text-slate-800">
-                Delete Employee
-              </h2>
-
-              <p className="text-slate-500 mt-2">
-                Are you sure you want to delete this employee?
-              </p>
-
-            </div>
-
-            <div className="flex gap-3">
-
-              <button
-                onClick={() => {
-
-                  setDeleteOpen(false);
-                  setDeleteId(null);
-
-                }}
-                className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3 rounded-2xl font-medium"
-              >
-
-                Cancel
-
-              </button>
-
-              <button
-                onClick={() => {
-                  if (deleteId !== null) {
-                    handleDelete(deleteId);
-                  }
-                }}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-2xl font-medium"
-              >
-
-                Delete
+                    : 'Save Employee'
+                }
 
               </button>
 
             </div>
 
           </div>
-
-        </div>
-
-      )}
+        )
+      }
 
     </div>
-  );
+  )
 }

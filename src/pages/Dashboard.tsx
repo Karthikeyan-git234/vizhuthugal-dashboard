@@ -16,12 +16,48 @@ import {
   Legend,
 } from 'recharts';
 
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import axios from 'axios';
+
 export default function Dashboard() {
 
+  const [employees, setEmployees] =
+    useState<any[]>([]);
+
+  // Fetch Employees
+  useEffect(() => {
+
+    fetchEmployees();
+
+  }, []);
+
+  const fetchEmployees = async () => {
+
+    try {
+
+      const res =
+        await axios.get(
+          'http://localhost:5000/api/employees'
+        );
+
+      setEmployees(res.data);
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+  };
+
+  // Stats
   const stats = [
     {
       title: 'Total Employees',
-      value: '124',
+      value: employees.length,
       icon: <Users size={28} />,
       bg: 'bg-blue-100',
       text: 'text-blue-600',
@@ -189,202 +225,88 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Charts + Overview */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-        {/* Pie Chart */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-
-          <div className="mb-6">
-
-            <h2 className="text-2xl font-bold text-slate-800">
-              Employee Status
-            </h2>
-
-            <p className="text-slate-500 text-sm mt-1">
-              Employee distribution overview
-            </p>
-
-          </div>
-
-          <div className="w-full h-[320px]">
-
-            <ResponsiveContainer>
-
-              <PieChart>
-
-                <Pie
-                  data={employeeData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={110}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-
-                  {employeeData.map((_, index) => (
-
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-
-                  ))}
-
-                </Pie>
-
-                <Tooltip />
-
-                <Legend />
-
-              </PieChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </div>
-
-        {/* Quick Overview */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-
-          <h2 className="text-2xl font-bold text-slate-800 mb-6">
-            Quick Overview
-          </h2>
-
-          <div className="space-y-6">
-
-            <div>
-
-              <div className="flex justify-between mb-2">
-
-                <p className="text-sm font-medium text-slate-600">
-                  Attendance
-                </p>
-
-                <p className="text-sm font-bold text-slate-800">
-                  80%
-                </p>
-
-              </div>
-
-              <div className="w-full bg-slate-200 rounded-full h-3">
-
-                <div className="bg-blue-600 h-3 rounded-full w-[80%]"></div>
-
-              </div>
-
-            </div>
-
-            <div>
-
-              <div className="flex justify-between mb-2">
-
-                <p className="text-sm font-medium text-slate-600">
-                  Reports Submitted
-                </p>
-
-                <p className="text-sm font-bold text-slate-800">
-                  65%
-                </p>
-
-              </div>
-
-              <div className="w-full bg-slate-200 rounded-full h-3">
-
-                <div className="bg-purple-600 h-3 rounded-full w-[65%]"></div>
-
-              </div>
-
-            </div>
-
-            <div>
-
-              <div className="flex justify-between mb-2">
-
-                <p className="text-sm font-medium text-slate-600">
-                  Task Completion
-                </p>
-
-                <p className="text-sm font-bold text-slate-800">
-                  92%
-                </p>
-
-              </div>
-
-              <div className="w-full bg-slate-200 rounded-full h-3">
-
-                <div className="bg-green-600 h-3 rounded-full w-[92%]"></div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* Recent Activities */}
+      {/* Employee List */}
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 
         <div className="flex items-center justify-between mb-6">
 
           <h2 className="text-2xl font-bold text-slate-800">
-            Recent Activities
+
+            Employees
+
           </h2>
 
-          <button className="text-blue-600 text-sm font-medium hover:underline">
+          <button
+            onClick={fetchEmployees}
+            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition"
+          >
 
-            View All
+            Refresh
 
           </button>
 
         </div>
 
-        <div className="space-y-5">
+        <div className="overflow-x-auto">
 
-          {activities.map((item, index) => (
+          <table className="w-full">
 
-            <div
-              key={index}
-              className="flex items-start justify-between border-b border-slate-100 pb-5 last:border-none"
-            >
+            <thead>
 
-              <div className="flex gap-4">
+              <tr className="border-b border-slate-200 text-left">
 
-                <div className="bg-blue-100 p-3 rounded-2xl h-fit">
+                <th className="py-3 text-slate-600">
+                  Name
+                </th>
 
-                  <Activity
-                    className="text-blue-600"
-                    size={20}
-                  />
+                <th className="py-3 text-slate-600">
+                  Email
+                </th>
 
-                </div>
+                <th className="py-3 text-slate-600">
+                  Phone
+                </th>
 
-                <div>
+                <th className="py-3 text-slate-600">
+                  Department
+                </th>
 
-                  <h3 className="font-semibold text-slate-800">
-                    {item.title}
-                  </h3>
+              </tr>
 
-                  <p className="text-sm text-slate-500 mt-1">
-                    {item.desc}
-                  </p>
+            </thead>
 
-                </div>
+            <tbody>
 
-              </div>
+              {employees.map((employee) => (
 
-              <span className="text-xs text-slate-400 whitespace-nowrap">
-                {item.time}
-              </span>
+                <tr
+                  key={employee.id}
+                  className="border-b border-slate-100"
+                >
 
-            </div>
+                  <td className="py-4 font-medium text-slate-800">
+                    {employee.name}
+                  </td>
 
-          ))}
+                  <td className="py-4 text-slate-600">
+                    {employee.email}
+                  </td>
+
+                  <td className="py-4 text-slate-600">
+                    {employee.phone}
+                  </td>
+
+                  <td className="py-4 text-slate-600">
+                    {employee.department}
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
 
         </div>
 
