@@ -47,6 +47,7 @@ export default function Sidebar() {
   path: '/Attendance',
 },
 
+
     {
       title: 'Reports',
       icon: <FileText size={20} />,
