@@ -28,22 +28,27 @@ export default function App() {
         element={<Login />}
       />
 
-       {/* Register */}
+      {/* Register */}
       <Route
-        path="/Register"
+        path="/register"
         element={<Register />}
       />
 
-       {/* ForgotPassword */}
+      {/* Forgot Password */}
       <Route
-        path="/Forgotpassword"
+        path="/forgotpassword"
         element={<ForgotPassword />}
       />
 
-      {/* Redirect */}
+      {/* Default Redirect */}
       <Route
         path="/"
-        element={<Navigate to="/dashboard" replace />}
+        element={
+          <Navigate
+            to="/login"
+            replace
+          />
+        }
       />
 
       {/* Dashboard Layout */}
@@ -58,6 +63,7 @@ export default function App() {
           path="/employees"
           element={<Employees />}
         />
+
         <Route
           path="/attendance"
           element={<Attendance />}
@@ -76,11 +82,9 @@ export default function App() {
         <Route
           path="/notifications"
           element={<Notifications />}
-         />
-        
+        />
 
       </Route>
-      
 
     </Routes>
   );
