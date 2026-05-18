@@ -249,13 +249,14 @@ export default function Attendance() {
 
   return (
 
-    <div className="p-6 bg-slate-100 min-h-screen">
-
+   
+  <div className="p-6 bg-slate-100 min-h-screen">
+    
       {/* Header */}
 
       <div className="mb-8">
 
-        <h1 className="text-3xl font-bold text-slate-800">
+          <h1 className="text-4xl font-bold text-slate-800">
 
           Attendance Dashboard
 

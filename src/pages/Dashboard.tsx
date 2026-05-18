@@ -4,6 +4,7 @@ import {
   FileText,
   Clock3,
   TrendingUp,
+  Activity,
 } from 'lucide-react';
 
 import {
@@ -13,12 +14,24 @@ import {
 
 import axios from 'axios';
 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  Tooltip,
+} from 'recharts';
+
 export default function Dashboard() {
 
   const [employees, setEmployees] =
     useState<any[]>([]);
 
-  // Fetch Employees
+  /* Fetch Employees */
+
   useEffect(() => {
 
     fetchEmployees();
@@ -43,8 +56,10 @@ export default function Dashboard() {
     }
   };
 
-  // Stats
+  /* Stats */
+
   const stats = [
+
     {
       title: 'Total Employees',
       value: employees.length,
@@ -78,26 +93,77 @@ export default function Dashboard() {
     },
   ];
 
+  /* Attendance Chart */
+
+  const attendanceData = [
+
+    {
+      name: 'Present',
+      value: 98,
+    },
+
+    {
+      name: 'Absent',
+      value: 12,
+    },
+  ];
+
+  /* Reports Chart */
+
+  const reportData = [
+
+    {
+      month: 'Jan',
+      reports: 12,
+    },
+
+    {
+      month: 'Feb',
+      reports: 18,
+    },
+
+    {
+      month: 'Mar',
+      reports: 25,
+    },
+
+    {
+      month: 'Apr',
+      reports: 20,
+    },
+  ];
+
+  const COLORS = [
+    '#2563eb',
+    '#22c55e',
+  ];
+
   return (
 
     <div className="space-y-8">
 
       {/* Header */}
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
         <div>
 
           <h1 className="text-4xl font-bold text-slate-800">
+
             Dashboard
+
           </h1>
 
           <p className="text-slate-500 mt-1">
+
             Welcome back, State Admin 👋
+
           </p>
 
         </div>
 
         {/* Performance */}
+
         <div className="flex items-center gap-3 bg-white px-5 py-4 rounded-2xl shadow-sm border border-slate-200">
 
           <div className="bg-green-100 p-3 rounded-xl">
@@ -112,11 +178,15 @@ export default function Dashboard() {
           <div>
 
             <h2 className="font-bold text-slate-800">
+
               +18%
+
             </h2>
 
             <p className="text-sm text-slate-500">
+
               Usage Increased
+
             </p>
 
           </div>
@@ -126,6 +196,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
         {stats.map((item, index) => (
@@ -140,11 +211,15 @@ export default function Dashboard() {
               <div>
 
                 <p className="text-slate-500 text-sm mb-2">
+
                   {item.title}
+
                 </p>
 
                 <h2 className="text-4xl font-bold text-slate-800">
+
                   {item.value}
+
                 </h2>
 
               </div>
@@ -165,20 +240,185 @@ export default function Dashboard() {
 
       </div>
 
+      {/* Analytics */}
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        {/* Attendance Chart */}
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl transition-all duration-300">
+
+          <div className="flex items-center justify-between mb-6">
+
+            <div>
+
+              <h2 className="text-2xl font-bold text-slate-800">
+
+                Attendance Overview
+
+              </h2>
+
+              <p className="text-slate-500 mt-1">
+
+                Daily attendance reflection
+
+              </p>
+
+            </div>
+
+            <div className="bg-blue-100 p-3 rounded-xl">
+
+              <Activity
+                className="text-blue-600"
+                size={22}
+              />
+
+            </div>
+
+          </div>
+
+          <div className="h-72">
+
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+            >
+
+              <PieChart>
+
+                <Pie
+                  data={attendanceData}
+                  dataKey="value"
+                  outerRadius={100}
+                  innerRadius={60}
+                  paddingAngle={5}
+                >
+
+                  {
+                    attendanceData.map(
+                      (
+                        entry,
+                        index
+                      ) => (
+
+                        <Cell
+                          key={index}
+                          fill={
+                            COLORS[index]
+                          }
+                        />
+                      )
+                    )
+                  }
+
+                </Pie>
+
+                <Tooltip />
+
+              </PieChart>
+
+            </ResponsiveContainer>
+
+          </div>
+
+        </div>
+
+        {/* Reports Chart */}
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl transition-all duration-300">
+
+          <div className="flex items-center justify-between mb-6">
+
+            <div>
+
+              <h2 className="text-2xl font-bold text-slate-800">
+
+                Reports Analytics
+
+              </h2>
+
+              <p className="text-slate-500 mt-1">
+
+                Monthly reports submitted
+
+              </p>
+
+            </div>
+
+            <div className="bg-purple-100 p-3 rounded-xl">
+
+              <FileText
+                className="text-purple-600"
+                size={22}
+              />
+
+            </div>
+
+          </div>
+
+          <div className="h-72">
+
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+            >
+
+              <BarChart
+                data={reportData}
+              >
+
+                <XAxis
+                  dataKey="month"
+                />
+
+                <Tooltip />
+
+                <Bar
+                  dataKey="reports"
+                  fill="#2563eb"
+                  radius={[
+                    10,
+                    10,
+                    0,
+                    0,
+                  ]}
+                />
+
+              </BarChart>
+
+            </ResponsiveContainer>
+
+          </div>
+
+        </div>
+
+      </div>
+
       {/* Employee List */}
+
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 
         <div className="flex items-center justify-between mb-6">
 
-          <h2 className="text-2xl font-bold text-slate-800">
+          <div>
 
-            Employees
+            <h2 className="text-2xl font-bold text-slate-800">
 
-          </h2>
+              Employees
+
+            </h2>
+
+            <p className="text-slate-500 mt-1">
+
+              Recent employee details
+
+            </p>
+
+          </div>
 
           <button
             onClick={fetchEmployees}
-            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-5 py-3 rounded-2xl text-sm hover:bg-blue-700 transition shadow-lg"
           >
 
             Refresh
@@ -195,19 +435,19 @@ export default function Dashboard() {
 
               <tr className="border-b border-slate-200 text-left">
 
-                <th className="py-3 text-slate-600">
+                <th className="py-4 text-slate-600">
                   Name
                 </th>
 
-                <th className="py-3 text-slate-600">
+                <th className="py-4 text-slate-600">
                   Email
                 </th>
 
-                <th className="py-3 text-slate-600">
+                <th className="py-4 text-slate-600">
                   Phone
                 </th>
 
-                <th className="py-3 text-slate-600">
+                <th className="py-4 text-slate-600">
                   Department
                 </th>
 
@@ -221,23 +461,31 @@ export default function Dashboard() {
 
                 <tr
                   key={employee.id}
-                  className="border-b border-slate-100"
+                  className="border-b border-slate-100 hover:bg-slate-50 transition-all"
                 >
 
-                  <td className="py-4 font-medium text-slate-800">
+                  <td className="py-5 font-medium text-slate-800">
+
                     {employee.name}
+
                   </td>
 
-                  <td className="py-4 text-slate-600">
+                  <td className="py-5 text-slate-600">
+
                     {employee.email}
+
                   </td>
 
-                  <td className="py-4 text-slate-600">
+                  <td className="py-5 text-slate-600">
+
                     {employee.phone}
+
                   </td>
 
-                  <td className="py-4 text-slate-600">
+                  <td className="py-5 text-slate-600">
+
                     {employee.department}
+
                   </td>
 
                 </tr>

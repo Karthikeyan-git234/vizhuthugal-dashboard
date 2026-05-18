@@ -66,7 +66,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 bg-slate-100 px-3 py-2 rounded-2xl cursor-pointer hover:bg-slate-200 transition">
 
           <img
-            src="https://i.pravatar.cc/40"
+            src="/vizhuthugal.png"
             alt="profile"
             className="w-10 h-10 rounded-full object-cover"
           />
@@ -74,11 +74,11 @@ export default function Navbar() {
           <div className="hidden sm:block">
 
             <h2 className="text-sm font-semibold text-slate-800">
-              Admin
+               State Admin
             </h2>
 
             <p className="text-xs text-slate-500">
-              State Admin
+             Alumni Connect
             </p>
 
           </div>

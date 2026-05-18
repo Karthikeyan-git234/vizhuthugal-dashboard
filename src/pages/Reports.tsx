@@ -21,6 +21,8 @@ interface Report {
   status: string;
 }
 
+import BackButton from '../components/Backbutton.tsx'
+
 export default function Reports() {
 
   const [reports, setReports] = useState<Report[]>([
@@ -179,10 +181,24 @@ export default function Reports() {
     return matchesSearch && matchesStatus;
   });
 
+  const handleExportPDF = () => {
+
+  window.print()
+}
+
   return (
 
-    <div className="min-h-screen bg-slate-100">
-
+<div className="min-h-screen bg-slate-100 print-area">
+  
+  
+        {/* Back Button */}
+  
+        <div className="mb-6">
+  
+          <BackButton />
+  
+        </div>
+  
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
 
@@ -201,13 +217,47 @@ export default function Reports() {
         {/* Buttons */}
         <div className="flex items-center gap-3">
 
-          <button className="flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 px-5 py-3 rounded-2xl text-slate-700 font-medium transition">
+          <button
 
-            <Download size={18} />
+  onClick={handleExportPDF}
 
-            Export
+  className="flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 px-5 py-3 rounded-2xl text-slate-700 font-medium transition"
+>
 
-          </button>
+  <Download size={18} />
+
+  Export PDF
+
+</button>
+<style>
+
+  {`
+
+    @media print {
+
+      body * {
+
+        visibility: hidden;
+      }
+
+      .print-area,
+      .print-area * {
+
+        visibility: visible;
+      }
+
+      .print-area {
+
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+
+  `}
+  
+</style>
 
           <button
             onClick={() => {

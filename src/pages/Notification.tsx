@@ -6,6 +6,7 @@ import {
   TriangleAlert,
   Clock3,
 } from 'lucide-react';
+import BackButton from '../components/Backbutton.tsx'
 
 export default function Notifications() {
 
@@ -104,7 +105,11 @@ export default function Notifications() {
   return (
 
     <div className="space-y-8">
+<div className="mb-6">
 
+  <BackButton />
+
+</div>
       {/* Header */}
       <div className="flex items-center justify-between">
 
