@@ -5,6 +5,7 @@ import {
   School,
   Building2,
   CheckCircle2,
+  Filter,
 } from 'lucide-react'
 
 import {
@@ -21,10 +22,13 @@ export default function CommunityTeam() {
   const [search, setSearch] =
     useState('')
 
+  const [statusFilter, setStatusFilter] =
+    useState('All')
+
   const [teamData, setTeamData] =
     useState<any[]>([])
 
-  // Fetch Data From Backend
+  // Fetch Data
 
   useEffect(() => {
 
@@ -37,7 +41,9 @@ export default function CommunityTeam() {
     try {
 
       const response =
-       await api.get('/schools')
+        await api.get(
+          '/schools'
+        )
 
       setTeamData(
         response.data
@@ -49,17 +55,33 @@ export default function CommunityTeam() {
     }
   }
 
-  // Search Filter
+  // Search + Filter
 
   const filteredData =
-    teamData.filter((item) =>
+    teamData.filter((item) => {
 
-      item.school_name
-        ?.toLowerCase()
-        .includes(
-          search.toLowerCase()
-        )
-    )
+      const matchesSearch =
+
+        item.school_name
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          )
+
+      const matchesStatus =
+
+        statusFilter === 'All'
+
+          ? true
+
+          : item.centenary_celebration_status ===
+            statusFilter
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      )
+    })
 
   // Active Count
 
@@ -135,7 +157,7 @@ export default function CommunityTeam() {
 
         </div>
 
-        {/* Active */}
+        {/* Completed */}
 
         <div className="bg-white rounded-3xl shadow-md border border-slate-200 p-6 flex items-center justify-between">
 
@@ -163,7 +185,7 @@ export default function CommunityTeam() {
 
         </div>
 
-        {/* Districts */}
+        {/* District */}
 
         <div className="bg-white rounded-3xl shadow-md border border-slate-200 p-6 flex items-center justify-between">
 
@@ -203,28 +225,78 @@ export default function CommunityTeam() {
 
       </div>
 
-      {/* Search */}
+      {/* Search + Filter */}
 
       <div className="bg-white rounded-3xl shadow-md border border-slate-200 p-5 mb-8">
 
-        <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-5 h-16">
+        <div className="flex flex-col lg:flex-row gap-4">
 
-          <Search
-            size={22}
-            className="text-slate-400"
-          />
+          {/* Search */}
 
-          <input
-            type="text"
-            placeholder="Search school..."
-            value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
-            }
-            className="bg-transparent flex-1 ml-4 outline-none text-lg"
-          />
+          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-5 h-16 flex-1">
+
+            <Search
+              size={22}
+              className="text-slate-400"
+            />
+
+            <input
+              type="text"
+              placeholder="Search school..."
+              value={search}
+              onChange={(e) =>
+                setSearch(
+                  e.target.value
+                )
+              }
+              className="bg-transparent flex-1 ml-4 outline-none text-lg"
+            />
+
+          </div>
+
+          {/* Filter */}
+
+          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-5 h-16 min-w-[260px]">
+
+            <Filter
+              size={22}
+              className="text-slate-400"
+            />
+
+            <select
+
+              value={statusFilter}
+
+              onChange={(e) =>
+                setStatusFilter(
+                  e.target.value
+                )
+              }
+
+              className="bg-transparent flex-1 ml-4 outline-none text-lg text-slate-700"
+            >
+
+              <option value="All">
+
+                All Status
+
+              </option>
+
+              <option value="Completed">
+
+                Completed
+
+              </option>
+
+              <option value="Pending">
+
+                Pending
+
+              </option>
+
+            </select>
+
+          </div>
 
         </div>
 
@@ -232,21 +304,31 @@ export default function CommunityTeam() {
 
       {/* Table */}
 
-      <div className="bg-white rounded-[32px] overflow-hidden shadow-xl border border-slate-200">
+      <div className="bg-white rounded-[32px] overflow-x-auto shadow-xl border border-slate-200">
 
         {/* Header */}
 
-        <div className="grid grid-cols-6 bg-blue-600 text-white px-6 py-5 font-semibold text-lg">
+        <div className="min-w-[2200px] grid grid-cols-11 bg-blue-600 text-white px-6 py-5 font-semibold text-lg">
 
           <div>S.No</div>
 
           <div>District</div>
 
-          <div>Category</div>
+          <div>Block Name</div>
+
+          <div>UDISE Code</div>
 
           <div>School Name</div>
 
+          <div>School Category</div>
+
+          <div>Management</div>
+
           <div>Status</div>
+
+          <div>Celebration Date</div>
+
+          <div>Committee</div>
 
           <div>Action</div>
 
@@ -263,7 +345,8 @@ export default function CommunityTeam() {
                 key={item.id}
 
                 className="
-                  grid grid-cols-6
+                  min-w-[2200px]
+                  grid grid-cols-11
                   px-6 py-5
                   border-b border-slate-200
                   items-center
@@ -272,11 +355,18 @@ export default function CommunityTeam() {
                 "
               >
 
+                {/* S.No */}
+
                 <div className="font-semibold text-slate-700">
 
-                  {index + 1}
+                  {
+                    item.sno ||
+                    index + 1
+                  }
 
                 </div>
+
+                {/* District */}
 
                 <div className="text-slate-700">
 
@@ -284,17 +374,47 @@ export default function CommunityTeam() {
 
                 </div>
 
+                {/* Block */}
+
                 <div className="text-slate-700">
 
-                  {item.school_category}
+                  {item.block_name}
 
                 </div>
+
+                {/* UDISE */}
+
+                <div className="text-slate-700 font-medium">
+
+                  {item.udise_code}
+
+                </div>
+
+                {/* School */}
 
                 <div className="font-medium text-slate-800">
 
                   {item.school_name}
 
                 </div>
+
+                {/* Category */}
+
+                <div className="text-slate-700">
+
+                  {item.school_category}
+
+                </div>
+
+                {/* Management */}
+
+                <div className="text-slate-700">
+
+                  {item.management_category}
+
+                </div>
+
+                {/* Status */}
 
                 <div>
 
@@ -320,6 +440,43 @@ export default function CommunityTeam() {
                   </span>
 
                 </div>
+
+                {/* Date */}
+
+                <div className="text-slate-700">
+
+                  {item.celebration_date}
+
+                </div>
+
+                {/* Committee */}
+
+                <div>
+
+                  <span
+                    className={`
+                      px-4 py-2 rounded-xl text-sm font-semibold
+                      
+                      ${
+                        item.committee_formed_status ===
+                        'Yes'
+
+                          ? 'bg-blue-100 text-blue-700'
+
+                          : 'bg-red-100 text-red-700'
+                      }
+                    `}
+                  >
+
+                    {
+                      item.committee_formed_status
+                    }
+
+                  </span>
+
+                </div>
+
+                {/* Action */}
 
                 <div className="flex items-center gap-4">
 
