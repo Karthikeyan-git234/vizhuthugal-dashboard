@@ -39,8 +39,8 @@ export default function CommunityTeam() {
       const response =
         await axios.get(
 
-          'https://YOUR-BACKEND-URL/api/schools'
-        )
+          'https://vizhuthugal-backend.onrender.com/api/schools'   
+             )
 
       setTeamData(
         response.data
