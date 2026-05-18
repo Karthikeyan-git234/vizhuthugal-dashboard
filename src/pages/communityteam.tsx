@@ -3,17 +3,12 @@ import {
   Trash2,
   Search,
   School,
-  Building2,
   CheckCircle2,
   Filter,
   ChevronLeft,
   ChevronRight,
   X,
-  TrendingUp,
   MapPin,
-  Calendar,
-  Users,
-  BarChart3,
   AlertCircle,
 } from 'lucide-react'
 
