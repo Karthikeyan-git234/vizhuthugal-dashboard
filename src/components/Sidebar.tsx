@@ -24,7 +24,23 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
-export default function Sidebar() {
+type SidebarProps = {
+
+  collapsed: boolean;
+
+  setCollapsed:
+    React.Dispatch<
+      React.SetStateAction<boolean>
+    >;
+};
+
+export default function Sidebar({
+
+  collapsed,
+
+  setCollapsed,
+
+}: SidebarProps) {
 
   const location = useLocation();
 
@@ -32,9 +48,6 @@ export default function Sidebar() {
 
   const [openMenu, setOpenMenu] =
     useState<string | null>(null);
-
-  const [collapsed, setCollapsed] =
-    useState(false);
 
   // Logout
 
@@ -546,16 +559,6 @@ export default function Sidebar() {
                   size={20}
                 />
               )
-          }
-
-          {
-
-            !collapsed && (
-
-              <>
-                
-              </>
-            )
           }
 
         </button>
