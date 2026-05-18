@@ -9,7 +9,7 @@ import {
 import {
   useState,
 } from 'react'
-import BackButton from '../components/Backbutton.tsx'
+import BackButton from '../components/BackButton'
 
 export default function SecuritySettings() {
 

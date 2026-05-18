@@ -6,7 +6,7 @@ import {
   TriangleAlert,
   Clock3,
 } from 'lucide-react';
-import BackButton from '../components/Backbutton.tsx'
+import BackButton from '../components/BackButton'
 
 export default function Notifications() {
 

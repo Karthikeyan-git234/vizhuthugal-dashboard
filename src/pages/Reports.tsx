@@ -20,9 +20,6 @@ interface Report {
   date: string;
   status: string;
 }
-
-import BackButton from '../components/Backbutton.tsx'
-
 export default function Reports() {
 
   const [reports, setReports] = useState<Report[]>([
@@ -189,15 +186,6 @@ export default function Reports() {
   return (
 
 <div className="min-h-screen bg-slate-100 print-area">
-  
-  
-        {/* Back Button */}
-  
-        <div className="mb-6">
-  
-          <BackButton />
-  
-        </div>
   
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">

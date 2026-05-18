@@ -1,4 +1,4 @@
-import BackButton from '../components/Backbutton.tsx'
+import BackButton from '../components/BackButton'
 
 export default function CommunityTeam() {
 
