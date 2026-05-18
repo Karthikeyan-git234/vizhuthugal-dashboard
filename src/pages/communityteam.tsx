@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react'
 
-import axios from 'axios'
+import api from '../services/api'
 
 import BackButton from '../components/BackButton'
 
@@ -37,10 +37,7 @@ export default function CommunityTeam() {
     try {
 
       const response =
-        await axios.get(
-
-          'https://vizhuthugal-backend.onrender.com/api/schools'   
-             )
+       await api.get('/schools')
 
       setTeamData(
         response.data
