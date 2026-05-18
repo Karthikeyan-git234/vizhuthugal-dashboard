@@ -297,7 +297,7 @@ export default function Dashboard() {
                   {
                     attendanceData.map(
                       (
-                        entry,
+                        _,
                         index
                       ) => (
 
