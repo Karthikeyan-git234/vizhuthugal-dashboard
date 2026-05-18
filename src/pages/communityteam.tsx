@@ -318,7 +318,7 @@ export default function CommunityTeam() {
           border-collapse: collapse;
         }
         .ct-table thead tr {
-          background: #0f172a;
+         background: linear-gradient(90deg, #2563eb, #1d4ed8);
         }
         .ct-table thead th {
           padding: 14px 16px;
