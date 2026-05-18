@@ -5,7 +5,6 @@ import {
   Settings,
   LogOut,
   ChevronDown,
-  ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
