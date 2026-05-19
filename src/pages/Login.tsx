@@ -37,108 +37,98 @@ export default function Login() {
   // LOGIN
   // =====================================
 
-  const handleLogin =
-    async () => {
+ const handleLogin =
+  async () => {
 
-      // Validation
+    // =====================================
+    // VALIDATION
+    // =====================================
 
-      if (
-        !email ||
-        !password
-      ) {
+    if (
+      !email ||
+      !password
+    ) {
 
-        alert(
-          'Enter Email and Password'
-        )
+      alert(
+        'Enter Email and Password'
+      )
 
-        return
-      }
+      return
+    }
 
-      try {
+    // =====================================
+    // STATIC LOGIN
+    // =====================================
 
-        setLoading(true)
+    if (
 
-        // API CALL
+      email !==
+        'resource@gmail.com' ||
 
-        const res =
-          await api.post(
+      password !==
+        'resource1'
 
-            '/auth/login',
+    ) {
 
-            {
-              email,
-              password,
-            }
+      alert(
+        'Invalid Email or Password'
+      )
 
-          )
+      return
+    }
 
-        console.log(
-          'LOGIN SUCCESS:',
-          res.data
-        )
+    try {
 
-        // SAVE USER
+      setLoading(true)
 
-        localStorage.setItem(
+      // =====================================
+      // SAVE USER
+      // =====================================
 
-          'user',
+      localStorage.setItem(
 
-          JSON.stringify(
-            res.data.user
-          )
+        'user',
 
-        )
+        JSON.stringify({
 
-        // ROLE BASED LOGIN
+          name: 'Resource',
 
-        const role =
-          res.data.user.role
+          email:
+            'resource@gmail.com',
 
-        if (
-          role === 'manager'
-        ) {
+          role: 'manager',
 
-          navigate('/dashboard')
+        })
 
-        } else if (
+      )
 
-          role === 'project_lead'
+      // =====================================
+      // SUCCESS
+      // =====================================
 
-        ) {
+      setTimeout(() => {
 
-          navigate('/dashboard')
-
-        } else {
-
-          navigate('/dashboard')
-
-        }
+        navigate('/dashboard')
 
         alert(
           'Login Successful'
         )
 
-      } catch (error: any) {
-
-        console.log(
-          'LOGIN ERROR:',
-          error.response?.data
-        )
-
-        alert(
-
-          error.response?.data
-            ?.message ||
-
-          'Login Failed'
-
-        )
-
-      } finally {
-
         setLoading(false)
-      }
+
+      }, 800)
+
+    } catch (error) {
+
+      console.log(error)
+
+      setLoading(false)
+
+      alert(
+        'Login Failed'
+      )
     }
+  }
 
   return (
 
