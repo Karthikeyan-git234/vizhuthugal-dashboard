@@ -68,7 +68,8 @@ export default function Login() {
       password !==
         'resource1'
 
-    ) {
+    ) 
+    {
 
       alert(
         'Invalid Email or Password'
