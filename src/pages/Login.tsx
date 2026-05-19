@@ -29,106 +29,75 @@ export default function Login() {
   const [showPassword, setShowPassword] =
     useState(false)
 
-  const [loading, setLoading] =
+  const [loading, ] =
     useState(false)
 
   // =====================================
   // LOGIN
   // =====================================
 
- const handleLogin =
-  async () => {
+const handleLogin = () => {
 
-    // =====================================
-    // VALIDATION
-    // =====================================
+  // =====================================
+  // VALIDATION
+  // =====================================
 
-    if (
-      !email ||
-      !password
-    ) {
+  if (
+    !email ||
+    !password
+  ) {
 
-      alert(
-        'Enter Email and Password'
-      )
+    alert(
+      'Enter Email and Password'
+    )
 
-      return
-    }
-
-    // =====================================
-    // STATIC LOGIN
-    // =====================================
-
-    if (
-
-      email !==
-        'resource@gmail.com' ||
-
-      password !==
-        'resource1'
-
-    ) 
-    {
-
-      alert(
-        'Invalid Email or Password'
-      )
-
-      return
-    }
-
-    try {
-
-      setLoading(true)
-
-      // =====================================
-      // SAVE USER
-      // =====================================
-
-      localStorage.setItem(
-
-        'user',
-
-        JSON.stringify({
-
-          name: 'Resource',
-
-          email:
-            'resource@gmail.com',
-
-          role: 'manager',
-
-        })
-
-      )
-
-      // =====================================
-      // SUCCESS
-      // =====================================
-
-      setTimeout(() => {
-
-        navigate('/dashboard')
-
-        alert(
-          'Login Successful'
-        )
-
-        setLoading(false)
-
-      }, 800)
-
-    } catch (error) {
-
-      console.log(error)
-
-      setLoading(false)
-
-      alert(
-        'Login Failed'
-      )
-    }
+    return
   }
+
+  // =====================================
+  // STATIC LOGIN
+  // =====================================
+
+  if (
+
+    email ===
+      'resource@gmail.com' &&
+
+    password ===
+      'resource1'
+
+  ) {
+
+    localStorage.setItem(
+
+      'user',
+
+      JSON.stringify({
+
+        name: 'Resource',
+
+        email:
+          'resource@gmail.com',
+
+        role: 'manager',
+
+      })
+
+    )
+
+    alert(
+      'Login Successful'
+    )
+
+    navigate('/dashboard')
+
+  } else {
+
+    alert(
+      'Invalid Email or Password'
+    )
+  }
+}
 
   return (
 
