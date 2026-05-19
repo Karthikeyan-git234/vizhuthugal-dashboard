@@ -18,6 +18,10 @@ import api from '../services/api'
 
 export default function Attendance() {
 
+  // =====================================
+  // STATES
+  // =====================================
+
   const [attendance, setAttendance] =
     useState<any[]>([])
 
@@ -45,7 +49,9 @@ export default function Attendance() {
   const [workDone, setWorkDone] =
     useState('')
 
-  /* Fetch Attendance */
+  // =====================================
+  // FETCH ATTENDANCE
+  // =====================================
 
   const fetchAttendance =
     async () => {
@@ -53,14 +59,20 @@ export default function Attendance() {
       try {
 
         const res =
-          await api.get('/work')
+          await api.get(
+            '/attendance'
+          )
 
-        setAttendance(res.data)
+        setAttendance(
+          res.data
+        )
 
-      } catch (err) {
+      } catch (error) {
 
-        console.log(err)
-
+        console.log(
+          'FETCH ERROR:',
+          error
+        )
       }
     }
 
@@ -70,41 +82,46 @@ export default function Attendance() {
 
   }, [])
 
-  /* Edit */
+  // =====================================
+  // EDIT
+  // =====================================
 
-  const handleEdit = (
-    item: any
-  ) => {
+  const handleEdit =
+    (item: any) => {
 
-    setEditId(item.id)
+      setEditId(item.id)
 
-    setEmployeeName(
-      item.employee_name
-    )
+      setEmployeeName(
+        item.employee_name || ''
+      )
 
-    setCheckInTime(
-      item.check_in
-    )
+      setCheckInTime(
+        item.check_in
+          ?.slice(0, 16) || ''
+      )
 
-    setCheckOutTime(
-      item.check_out
-    )
+      setCheckOutTime(
+        item.check_out
+          ?.slice(0, 16) || ''
+      )
 
-    setWorkDone(
-      item.work_done
-    )
+      setWorkDone(
+        item.work_done || ''
+      )
 
-    setShowModal(true)
-  }
+      setShowModal(true)
+    }
 
-  /* Delete */
+  // =====================================
+  // DELETE
+  // =====================================
 
   const handleDelete =
     async (id: number) => {
 
       const confirmDelete =
         window.confirm(
-          'Delete attendance report?'
+          'Delete attendance record?'
         )
 
       if (!confirmDelete)
@@ -113,19 +130,23 @@ export default function Attendance() {
       try {
 
         await api.delete(
-          `/work/${id}`
+          `/attendance/${id}`
         )
 
         fetchAttendance()
 
-      } catch (err) {
+      } catch (error) {
 
-        console.log(err)
-
+        console.log(
+          'DELETE ERROR:',
+          error
+        )
       }
     }
 
-  /* Update */
+  // =====================================
+  // UPDATE
+  // =====================================
 
   const handleUpdate =
     async () => {
@@ -134,15 +155,20 @@ export default function Attendance() {
 
         await api.put(
 
-          `/work/${editId}`,
+          `/attendance/${editId}`,
 
           {
-            employeeName,
-            checkIn:
+            employee_name:
+              employeeName,
+
+            check_in:
               checkInTime,
-            checkOut:
+
+            check_out:
               checkOutTime,
-            workDone,
+
+            work_done:
+              workDone,
           }
 
         )
@@ -153,14 +179,18 @@ export default function Attendance() {
 
         setEditId(null)
 
-      } catch (err) {
+      } catch (error) {
 
-        console.log(err)
-
+        console.log(
+          'UPDATE ERROR:',
+          error
+        )
       }
     }
 
-  /* Filter */
+  // =====================================
+  // FILTER
+  // =====================================
 
   const filteredAttendance =
     useMemo(() => {
@@ -179,7 +209,9 @@ export default function Attendance() {
           const matchesDate =
 
             selectedDate === ''
+
               ? true
+
               : item.check_in
                   ?.split('T')[0] ===
                 selectedDate
@@ -197,7 +229,9 @@ export default function Attendance() {
       selectedDate,
     ])
 
-  /* Stats */
+  // =====================================
+  // STATS
+  // =====================================
 
   const totalAttendance =
     attendance.length
@@ -217,10 +251,12 @@ export default function Attendance() {
 
   const totalHours =
     attendance.reduce(
-      (
-        total,
-        item
-      ) => {
+      (total, item) => {
+
+        if (
+          !item.check_in ||
+          !item.check_out
+        ) return total
 
         const checkIn =
           new Date(
@@ -239,9 +275,7 @@ export default function Attendance() {
           ) /
           (1000 * 60 * 60)
 
-        return (
-          total + diff
-        )
+        return total + diff
 
       },
       0
@@ -249,20 +283,21 @@ export default function Attendance() {
 
   return (
 
-   
-  <div className="p-6 bg-slate-100 min-h-screen">
-    
-      {/* Header */}
+    <div className="p-6 bg-slate-100 min-h-screen">
+
+      {/* ===================================== */}
+      {/* HEADER */}
+      {/* ===================================== */}
 
       <div className="mb-8">
 
-          <h1 className="text-4xl font-bold text-slate-800">
+        <h1 className="text-4xl font-bold text-slate-800">
 
           Attendance Dashboard
 
         </h1>
 
-        <p className="text-slate-500 mt-1">
+        <p className="text-slate-500 mt-2">
 
           Employee daily attendance reports
 
@@ -270,13 +305,15 @@ export default function Attendance() {
 
       </div>
 
-      {/* Stats */}
+      {/* ===================================== */}
+      {/* STATS */}
+      {/* ===================================== */}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
         {/* Total */}
 
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-3xl p-5 shadow-sm border">
 
           <div className="flex items-center justify-between">
 
@@ -288,7 +325,7 @@ export default function Attendance() {
 
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold mt-2">
 
                 {totalAttendance}
 
@@ -311,7 +348,7 @@ export default function Attendance() {
 
         {/* Today */}
 
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-3xl p-5 shadow-sm border">
 
           <div className="flex items-center justify-between">
 
@@ -323,7 +360,7 @@ export default function Attendance() {
 
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold mt-2">
 
                 {todayPresent}
 
@@ -346,7 +383,7 @@ export default function Attendance() {
 
         {/* Hours */}
 
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-3xl p-5 shadow-sm border">
 
           <div className="flex items-center justify-between">
 
@@ -354,11 +391,11 @@ export default function Attendance() {
 
               <p className="text-slate-500 text-sm">
 
-                Total Working Hours
+                Total Hours
 
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold mt-2">
 
                 {totalHours.toFixed(1)}h
 
@@ -381,13 +418,13 @@ export default function Attendance() {
 
       </div>
 
-      {/* Search + Filter */}
+      {/* ===================================== */}
+      {/* SEARCH */}
+      {/* ===================================== */}
 
-      <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 mb-8">
+      <div className="bg-white rounded-3xl p-5 shadow-sm border mb-8">
 
         <div className="flex flex-col md:flex-row gap-4">
-
-          {/* Search */}
 
           <div className="flex-1 relative">
 
@@ -405,12 +442,10 @@ export default function Attendance() {
                   e.target.value
                 )
               }
-              className="w-full h-14 rounded-2xl border border-slate-300 pl-12 pr-4 outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
+              className="w-full h-14 rounded-2xl border border-slate-300 pl-12 pr-4 outline-none"
             />
 
           </div>
-
-          {/* Date Filter */}
 
           <input
             type="date"
@@ -420,16 +455,18 @@ export default function Attendance() {
                 e.target.value
               )
             }
-            className="h-14 px-5 rounded-2xl border border-slate-300 outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
+            className="h-14 px-5 rounded-2xl border border-slate-300 outline-none"
           />
 
         </div>
 
       </div>
 
-      {/* Table */}
+      {/* ===================================== */}
+      {/* TABLE */}
+      {/* ===================================== */}
 
-      <div className="overflow-x-auto bg-white rounded-3xl shadow-sm border border-slate-200">
+      <div className="overflow-x-auto bg-white rounded-3xl shadow-sm border">
 
         <table className="w-full">
 
@@ -477,20 +514,7 @@ export default function Attendance() {
                     className="text-center py-16"
                   >
 
-                    <div className="flex flex-col items-center">
-
-                      <Users
-                        size={55}
-                        className="text-slate-300"
-                      />
-
-                      <h2 className="text-2xl font-bold text-slate-700 mt-4">
-
-                        No Attendance Found
-
-                      </h2>
-
-                    </div>
+                    No Attendance Found
 
                   </td>
 
@@ -502,92 +526,80 @@ export default function Attendance() {
                   (item: any) => {
 
                     const checkIn =
-                      new Date(
-                        item.check_in
-                      )
+                      item.check_in
+                        ? new Date(item.check_in)
+                        : null
 
                     const checkOut =
-                      new Date(
-                        item.check_out
-                      )
+                      item.check_out
+                        ? new Date(item.check_out)
+                        : null
 
                     const hours =
-                      (
-                        (
-                          checkOut.getTime() -
-                          checkIn.getTime()
-                        ) /
-                        (1000 *
-                          60 *
-                          60)
-                      ).toFixed(1)
+
+                      checkIn &&
+                      checkOut
+
+                        ? (
+                            (
+                              checkOut.getTime() -
+                              checkIn.getTime()
+                            ) /
+                            (1000 * 60 * 60)
+                          ).toFixed(1)
+
+                        : '0'
 
                     return (
 
                       <tr
                         key={item.id}
-                        className="border-b hover:bg-slate-50 transition-all"
+                        className="border-b hover:bg-slate-50"
                       >
 
-                        <td className="p-5 font-semibold text-slate-800">
+                        <td className="p-5 font-semibold">
 
                           {item.employee_name}
 
                         </td>
 
-                        <td className="p-5 text-slate-700">
+                        <td className="p-5">
 
                           {
-                            checkIn.toLocaleTimeString(
-                              [],
-                              {
-                                hour:
-                                  '2-digit',
-                                minute:
-                                  '2-digit',
-                              }
-                            )
+                            checkIn
+                              ?.toLocaleString()
                           }
-
-                        </td>
-
-                        <td className="p-5 text-slate-700">
-
-                          {
-                            checkOut.toLocaleTimeString(
-                              [],
-                              {
-                                hour:
-                                  '2-digit',
-                                minute:
-                                  '2-digit',
-                              }
-                            )
-                          }
-
-                        </td>
-
-                        <td className="p-5 text-slate-700 max-w-sm">
-
-                          {item.work_done}
 
                         </td>
 
                         <td className="p-5">
 
-                          <span className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 text-sm font-medium">
-
-                            {hours} hrs
-
-                          </span>
+                          {
+                            checkOut
+                              ?.toLocaleString()
+                              || '--'
+                          }
 
                         </td>
 
-                        {/* Actions */}
+                        <td className="p-5">
+
+                          {
+                            item.work_done
+                              || '--'
+                          }
+
+                        </td>
 
                         <td className="p-5">
 
-                          <div className="flex items-center gap-3">
+                          {hours} hrs
+
+                        </td>
+
+                        <td className="p-5">
+
+                          <div className="flex gap-3">
 
                             {/* Edit */}
 
@@ -595,7 +607,7 @@ export default function Attendance() {
                               onClick={() =>
                                 handleEdit(item)
                               }
-                              className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-all"
+                              className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"
                             >
 
                               <Pencil
@@ -611,7 +623,7 @@ export default function Attendance() {
                               onClick={() =>
                                 handleDelete(item.id)
                               }
-                              className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center hover:bg-red-200 transition-all"
+                              className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center"
                             >
 
                               <Trash2
@@ -638,7 +650,9 @@ export default function Attendance() {
 
       </div>
 
-      {/* Edit Modal */}
+      {/* ===================================== */}
+      {/* EDIT MODAL */}
+      {/* ===================================== */}
 
       {
         showModal && (
@@ -663,115 +677,77 @@ export default function Attendance() {
 
               </button>
 
-              <h2 className="text-2xl font-bold text-slate-800 mb-6">
+              <h2 className="text-2xl font-bold mb-6">
 
                 Edit Attendance
 
               </h2>
 
-              <div className="grid grid-cols-1 gap-5">
+              <div className="grid gap-5">
 
                 {/* Employee */}
 
-                <div>
-
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
-                    Employee Name
-
-                  </label>
-
-                  <input
-                    type="text"
-                    value={employeeName}
-                    onChange={(e) =>
-                      setEmployeeName(
-                        e.target.value
-                      )
-                    }
-                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
-                  />
-
-                </div>
+                <input
+                  type="text"
+                  placeholder="Employee Name"
+                  value={employeeName}
+                  onChange={(e) =>
+                    setEmployeeName(
+                      e.target.value
+                    )
+                  }
+                  className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none"
+                />
 
                 {/* Check In */}
 
-                <div>
-
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
-                    Check In
-
-                  </label>
-
-                  <input
-                    type="datetime-local"
-                    value={checkInTime?.slice(0,16)}
-                    onChange={(e) =>
-                      setCheckInTime(
-                        e.target.value
-                      )
-                    }
-                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
-                  />
-
-                </div>
+                <input
+                  type="datetime-local"
+                  value={checkInTime}
+                  onChange={(e) =>
+                    setCheckInTime(
+                      e.target.value
+                    )
+                  }
+                  className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none"
+                />
 
                 {/* Check Out */}
 
-                <div>
-
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
-                    Check Out
-
-                  </label>
-
-                  <input
-                    type="datetime-local"
-                    value={checkOutTime?.slice(0,16)}
-                    onChange={(e) =>
-                      setCheckOutTime(
-                        e.target.value
-                      )
-                    }
-                    className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none focus:ring-4 focus:ring-blue-100"
-                  />
-
-                </div>
+                <input
+                  type="datetime-local"
+                  value={checkOutTime}
+                  onChange={(e) =>
+                    setCheckOutTime(
+                      e.target.value
+                    )
+                  }
+                  className="w-full h-14 rounded-2xl border border-slate-300 px-4 outline-none"
+                />
 
                 {/* Work Done */}
 
-                <div>
-
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
-                    Work Done
-
-                  </label>
-
-                  <textarea
-                    value={workDone}
-                    onChange={(e) =>
-                      setWorkDone(
-                        e.target.value
-                      )
-                    }
-                    rows={5}
-                    className="w-full rounded-2xl border border-slate-300 p-4 outline-none focus:ring-4 focus:ring-blue-100"
-                  />
-
-                </div>
+                <textarea
+                  rows={5}
+                  placeholder="Work Done"
+                  value={workDone}
+                  onChange={(e) =>
+                    setWorkDone(
+                      e.target.value
+                    )
+                  }
+                  className="w-full rounded-2xl border border-slate-300 p-4 outline-none"
+                />
 
               </div>
 
-              {/* Update Button */}
+              {/* Update */}
 
               <button
                 onClick={
                   handleUpdate
                 }
-                className="w-full h-14 bg-blue-600 hover:bg-blue-700 transition-all rounded-2xl text-white font-semibold mt-8"
+                className="w-full h-14 bg-blue-600 hover:bg-blue-700 rounded-2xl text-white font-semibold mt-8"
               >
 
                 Update Attendance

@@ -1,8 +1,10 @@
 import axios from 'axios'
 
-export default axios.create({
+const API = axios.create({
 
   baseURL:
     'https://vizhuthugal-backend.onrender.com/api',
 
 })
+
+export default API
