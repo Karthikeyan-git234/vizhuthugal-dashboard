@@ -5,14 +5,14 @@ import {
   Clock3,
   TrendingUp,
   Activity,
-} from 'lucide-react';
+} from 'lucide-react'
 
 import {
   useEffect,
   useState,
-} from 'react';
+} from 'react'
 
-import axios from 'axios';
+import axios from 'axios'
 
 import {
   PieChart,
@@ -23,40 +23,87 @@ import {
   Bar,
   XAxis,
   Tooltip,
-} from 'recharts';
+} from 'recharts'
 
 export default function Dashboard() {
 
-  const [employees, setEmployees] =
-    useState<any[]>([]);
+  /* ===================================== */
+  /* STATES */
+  /* ===================================== */
 
-  /* Fetch Employees */
+  const [employees, setEmployees] =
+    useState<any[]>([])
+
+  const [loading, setLoading] =
+    useState(false)
+
+  /* ===================================== */
+  /* FETCH EMPLOYEES */
+  /* ===================================== */
 
   useEffect(() => {
 
-    fetchEmployees();
+    fetchEmployees()
 
-  }, []);
+  }, [])
 
   const fetchEmployees = async () => {
 
     try {
 
+      setLoading(true)
+
       const res =
         await axios.get(
-          'http://localhost:5000/api/employees'
-        );
+          'https://vizhuthugal-backend.onrender.com/api/employees'
+        )
 
-      setEmployees(res.data);
+      console.log(
+        'EMPLOYEE API:',
+        res.data
+      )
+
+      /* ===================================== */
+      /* SAFE ARRAY FIX */
+      /* ===================================== */
+
+      const employeeData =
+
+        Array.isArray(res.data)
+
+          ? res.data
+
+          : Array.isArray(
+              res.data.data
+            )
+
+          ? res.data.data
+
+          : []
+
+      setEmployees(
+        employeeData
+      )
+
+      setLoading(false)
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+        'EMPLOYEE FETCH ERROR:',
+        err
+      )
+
+      setEmployees([])
+
+      setLoading(false)
 
     }
-  };
+  }
 
-  /* Stats */
+  /* ===================================== */
+  /* STATS */
+  /* ===================================== */
 
   const stats = [
 
@@ -91,9 +138,11 @@ export default function Dashboard() {
       bg: 'bg-orange-100',
       text: 'text-orange-600',
     },
-  ];
+  ]
 
-  /* Attendance Chart */
+  /* ===================================== */
+  /* ATTENDANCE CHART */
+  /* ===================================== */
 
   const attendanceData = [
 
@@ -106,9 +155,11 @@ export default function Dashboard() {
       name: 'Absent',
       value: 12,
     },
-  ];
+  ]
 
-  /* Reports Chart */
+  /* ===================================== */
+  /* REPORT CHART */
+  /* ===================================== */
 
   const reportData = [
 
@@ -131,18 +182,20 @@ export default function Dashboard() {
       month: 'Apr',
       reports: 20,
     },
-  ];
+  ]
 
   const COLORS = [
     '#2563eb',
     '#22c55e',
-  ];
+  ]
 
   return (
 
     <div className="space-y-8">
 
-      {/* Header */}
+      {/* ===================================== */}
+      {/* HEADER */}
+      {/* ===================================== */}
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
@@ -162,7 +215,9 @@ export default function Dashboard() {
 
         </div>
 
-        {/* Performance */}
+        {/* ===================================== */}
+        {/* PERFORMANCE */}
+        {/* ===================================== */}
 
         <div className="flex items-center gap-3 bg-white px-5 py-4 rounded-2xl shadow-sm border border-slate-200">
 
@@ -195,7 +250,9 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Stats */}
+      {/* ===================================== */}
+      {/* STATS */}
+      {/* ===================================== */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
@@ -240,11 +297,15 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Analytics */}
+      {/* ===================================== */}
+      {/* ANALYTICS */}
+      {/* ===================================== */}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-        {/* Attendance Chart */}
+        {/* ===================================== */}
+        {/* ATTENDANCE CHART */}
+        {/* ===================================== */}
 
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl transition-all duration-300">
 
@@ -323,7 +384,9 @@ export default function Dashboard() {
 
         </div>
 
-        {/* Reports Chart */}
+        {/* ===================================== */}
+        {/* REPORTS CHART */}
+        {/* ===================================== */}
 
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl transition-all duration-300">
 
@@ -394,7 +457,9 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Employee List */}
+      {/* ===================================== */}
+      {/* EMPLOYEE LIST */}
+      {/* ===================================== */}
 
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 
@@ -427,79 +492,126 @@ export default function Dashboard() {
 
         </div>
 
-        <div className="overflow-x-auto">
+        {/* ===================================== */}
+        {/* LOADING */}
+        {/* ===================================== */}
 
-          <table className="w-full">
+        {
+          loading ? (
 
-            <thead>
+            <div className="text-center py-10 text-slate-500">
 
-              <tr className="border-b border-slate-200 text-left">
+              Loading Employees...
 
-                <th className="py-4 text-slate-600">
-                  Name
-                </th>
+            </div>
 
-                <th className="py-4 text-slate-600">
-                  Email
-                </th>
+          ) : (
 
-                <th className="py-4 text-slate-600">
-                  Phone
-                </th>
+            <div className="overflow-x-auto">
 
-                <th className="py-4 text-slate-600">
-                  Department
-                </th>
+              <table className="w-full">
 
-              </tr>
+                <thead>
 
-            </thead>
+                  <tr className="border-b border-slate-200 text-left">
 
-            <tbody>
+                    <th className="py-4 text-slate-600">
+                      Name
+                    </th>
 
-              {employees.map((employee) => (
+                    <th className="py-4 text-slate-600">
+                      Email
+                    </th>
 
-                <tr
-                  key={employee.id}
-                  className="border-b border-slate-100 hover:bg-slate-50 transition-all"
-                >
+                    <th className="py-4 text-slate-600">
+                      Phone
+                    </th>
 
-                  <td className="py-5 font-medium text-slate-800">
+                    <th className="py-4 text-slate-600">
+                      Department
+                    </th>
 
-                    {employee.name}
+                  </tr>
 
-                  </td>
+                </thead>
 
-                  <td className="py-5 text-slate-600">
+                <tbody>
 
-                    {employee.email}
+                  {
+                    Array.isArray(employees) &&
 
-                  </td>
+                    employees.length > 0 ? (
 
-                  <td className="py-5 text-slate-600">
+                      employees.map((employee) => (
 
-                    {employee.phone}
+                        <tr
+                          key={employee.id}
+                          className="border-b border-slate-100 hover:bg-slate-50 transition-all"
+                        >
 
-                  </td>
+                          <td className="py-5 font-medium text-slate-800">
 
-                  <td className="py-5 text-slate-600">
+                            {employee.name}
 
-                    {employee.department}
+                          </td>
 
-                  </td>
+                          <td className="py-5 text-slate-600">
 
-                </tr>
+                            {employee.email}
 
-              ))}
+                          </td>
 
-            </tbody>
+                          <td className="py-5 text-slate-600">
 
-          </table>
+                            {
+                              employee.phone ||
+                              '-'
+                            }
 
-        </div>
+                          </td>
+
+                          <td className="py-5 text-slate-600">
+
+                            {
+                              employee.department ||
+                              '-'
+                            }
+
+                          </td>
+
+                        </tr>
+
+                      ))
+
+                    ) : (
+
+                      <tr>
+
+                        <td
+                          colSpan={4}
+                          className="text-center py-10 text-slate-400"
+                        >
+
+                          No Employees Found
+
+                        </td>
+
+                      </tr>
+
+                    )
+                  }
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          )
+        }
 
       </div>
 
     </div>
-  );
+  )
 }
