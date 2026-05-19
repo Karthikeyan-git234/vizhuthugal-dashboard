@@ -64,8 +64,8 @@ export default function Attendance() {
           )
 
         setAttendance(
-          res.data
-        )
+            res.data.data || []
+            )
 
       } catch (error) {
 
