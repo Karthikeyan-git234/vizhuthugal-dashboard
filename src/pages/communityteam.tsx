@@ -9,6 +9,9 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+import BackButton from "../components/BackButton";
+
+
 export default function CommunityTeam() {
 
   const navigate =
@@ -92,11 +95,20 @@ export default function CommunityTeam() {
 
   return (
 
+    
+         
+
     <div className="
       min-h-screen
       bg-slate-100
       p-8
     ">
+
+       <div className="mb-6">
+    
+            <BackButton />
+    
+          </div>
 
       {/* ===================================== */}
       {/* HEADER */}
