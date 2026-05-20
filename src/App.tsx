@@ -4,23 +4,66 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-import DashboardLayout from './layouts/DashboardLayout';
+import DashboardLayout
+from './layouts/DashboardLayout';
 
-import Dashboard from './pages/Dashboard';
-import Employees from './pages/Employees';
-import Reports from './pages/Reports';
-import Settings from './pages/Settings';
-import Login from './pages/Login';
-import Attendance from './pages/Attendance';
-import Notifications from './pages/Notification';
-import Register from './pages/Register';
-import ForgotPassword from './pages/Forgotpassword';
+import Dashboard
+from './pages/Dashboard';
 
-import ProfileSettings from './pages/profile-settings';
-import NotificationSettings from './pages/NotificationSettings';
-import SecuritySettings from './pages/SecuritySettings';
-import MentorshipTeam from './pages/mentorshipteam';
-import CommunityTeam from './pages/communityteam';
+import Employees
+from './pages/Employees';
+
+import Reports
+from './pages/Reports';
+
+import Settings
+from './pages/Settings';
+
+import Login
+from './pages/Login';
+
+import Attendance
+from './pages/Attendance';
+
+import Notifications
+from './pages/Notification';
+
+import Register
+from './pages/Register';
+
+import ForgotPassword
+from './pages/Forgotpassword';
+
+import ProfileSettings
+from './pages/profile-settings';
+
+import NotificationSettings
+from './pages/NotificationSettings';
+
+import SecuritySettings
+from './pages/SecuritySettings';
+
+import MentorshipTeam
+from './pages/mentorshipteam';
+
+/* ===================================== */
+/* COMMUNITY TEAM PAGES */
+/* ===================================== */
+
+import CommunityTeam
+from './pages/communityteam';
+
+import Centinary
+from './pages/communityteam/centinary';
+
+import Smc
+from './pages/communityteam/Smc';
+
+import Ambassador
+from './pages/communityteam/Ambassador';
+
+import CareerGuidance
+from './pages/communityteam/CareerGuidance';
 
 export default function App() {
 
@@ -28,42 +71,51 @@ export default function App() {
 
     <Routes>
 
-      {/* Login */}
+      {/* ===================================== */}
+      {/* AUTH */}
+      {/* ===================================== */}
 
       <Route
         path="/login"
         element={<Login />}
       />
 
-      {/* Register */}
-
       <Route
         path="/register"
         element={<Register />}
       />
 
-      {/* Forgot Password */}
-
       <Route
         path="/forgotpassword"
-        element={<ForgotPassword />}
+        element={
+          <ForgotPassword />
+        }
       />
 
-      {/* Default Redirect */}
+      {/* ===================================== */}
+      {/* DEFAULT */}
+      {/* ===================================== */}
 
       <Route
+
         path="/"
+
         element={
           <Navigate
             to="/login"
             replace
           />
         }
+
       />
 
-      {/* Dashboard Layout */}
+      {/* ===================================== */}
+      {/* DASHBOARD LAYOUT */}
+      {/* ===================================== */}
 
-      <Route element={<DashboardLayout />}>
+      <Route
+        element={<DashboardLayout />}
+      >
 
         {/* Dashboard */}
 
@@ -86,60 +138,92 @@ export default function App() {
           element={<Attendance />}
         />
 
-        {/* Community Team Now  */}
+        {/* Reports */}
 
         <Route
           path="/reports"
           element={<Reports />}
         />
 
-        {/* Mentorship Team  */}
+        {/* ===================================== */}
+        {/* COMMUNITY TEAM */}
+        {/* ===================================== */}
 
-            <Route
-          path="/mentorshipteam"
-          element={<MentorshipTeam />}
-        />
-
-        {/* Community Team  */}
-
-            <Route
+        <Route
           path="/communityteam"
-          element={<CommunityTeam />}
+          element={
+            <CommunityTeam />
+          }
         />
 
-        {/* Settings */}
+        <Route
+          path="/communityteam/centinary"
+          element={<Centinary />}
+        />
+
+        <Route
+          path="/communityteam/smc"
+          element={<Smc />}
+        />
+
+        <Route
+          path="/communityteam/ambassador"
+          element={<Ambassador />}
+        />
+
+        <Route
+          path="/communityteam/careerguidance"
+          element={
+            <CareerGuidance />
+          }
+        />
+
+        {/* ===================================== */}
+        {/* MENTORSHIP */}
+        {/* ===================================== */}
+
+        <Route
+          path="/mentorshipteam"
+          element={
+            <MentorshipTeam />
+          }
+        />
+
+        {/* ===================================== */}
+        {/* SETTINGS */}
+        {/* ===================================== */}
 
         <Route
           path="/settings"
           element={<Settings />}
         />
 
-        {/* Profile Settings */}
-
         <Route
           path="/profile-settings"
-          element={<ProfileSettings />}
+          element={
+            <ProfileSettings />
+          }
         />
-
-        {/* Notifications */}
 
         <Route
           path="/notifications"
-          element={<Notifications />}
+          element={
+            <Notifications />
+          }
         />
-
-        {/* Notification Settings */}
 
         <Route
           path="/notificationsettings"
-          element={<NotificationSettings />}
+          element={
+            <NotificationSettings />
+          }
         />
-
-        {/* Security Settings */}
 
         <Route
           path="/securitysettings"
-          element={<SecuritySettings />}
+          element={
+            <SecuritySettings />
+          }
         />
 
       </Route>
