@@ -393,15 +393,30 @@ export default function Employees() {
   const [joiningDate, setJoiningDate] = useState('')
 
   /* ===================================== */
-  /* FETCH */
+  /* FETCH — FIXED */
   /* ===================================== */
 
   const fetchEmployees = async () => {
     try {
       const res = await api.get('/employees')
-      setEmployees(res.data)
+      const data = res.data
+      // Handle all common API response shapes:
+      // 1. Array directly:        res.data → []
+      // 2. Wrapped in .data:      res.data → { data: [] }
+      // 3. Wrapped in .employees: res.data → { employees: [] }
+      if (Array.isArray(data)) {
+        setEmployees(data)
+      } else if (Array.isArray(data?.data)) {
+        setEmployees(data.data)
+      } else if (Array.isArray(data?.employees)) {
+        setEmployees(data.employees)
+      } else {
+        console.warn('Unexpected API response shape:', data)
+        setEmployees([])
+      }
     } catch (err) {
       console.log(err)
+      setEmployees([]) // prevent .filter crash on API error
     }
   }
 
