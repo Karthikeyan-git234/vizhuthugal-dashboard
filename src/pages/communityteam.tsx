@@ -32,10 +32,31 @@ export default function CommunityTeam() {
   const fetchSchools = async () => {
     try {
       setIsLoading(true)
-      const response = await api.get('/schools')
-      setTeamData(response.data)
-    } catch (error) {
-      console.log(error)
+      const response =
+  await api.get('/schools')
+
+console.log(
+  'SCHOOL API:',
+  response.data
+)
+
+setTeamData(
+
+  Array.isArray(
+    response.data
+  )
+
+    ? response.data
+
+    : Array.isArray(
+        response.data.data
+      )
+
+    ? response.data.data
+
+    : []
+
+)
     } finally {
       setIsLoading(false)
     }
